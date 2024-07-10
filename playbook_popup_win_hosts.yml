@@ -1,0 +1,13 @@
+#Gera um PopUp na tela dos PCs Windows
+
+---
+- name: Mensagem no Windows
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Exibir mensagem
+      community.windows.win_msg:
+        display_seconds: 999999999
+        msg: "Sua Mensagem"
+        title: "Aviso Importante"
+        register: result
