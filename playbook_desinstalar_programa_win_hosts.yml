@@ -1,0 +1,38 @@
+#Playbook para desinstalar um programa no caso Discord
+
+---
+- name: Encerrar e desinstalar Discord
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Obter o nome do user via Win32_ComputerSystem (WMI)
+      win_shell: |
+        (Get-WmiObject -Class Win32_ComputerSystem).UserName
+      register: wmi_username #registrando o resultado, geralmente no padrão DOMINIO/User/r/n
+
+    - name: Limpar o nome do usuário #Realizando a limpeza dp resultado e armazenado em nova variável
+      set_fact:
+        cleaned_username: "{{ wmi_username.stdout | regex_replace('^[^\\\\]*\\\\', '') | replace('\\r', '') | replace('\\n', '') | trim() }}"
+
+    - name: Exibir nome do usu  rio limpo #(Opcional) Verificando o Usermame pós tratamento
+      debug:
+        msg: "Nome do usu  rio: {{ cleaned_username }}"
+
+    - name: Verificar se o processo Discord está em execução
+      win_shell: |
+        Get-Process -Name "Discord" -ErrorAction SilentlyContinue
+      register: discord_process_check
+
+    - name: Encerrar o processo Discord, se estiver em execução
+      win_shell: |
+        Stop-Process -Name "Discord" -Force
+      when: discord_process_check.rc == 0
+
+   - name: Desinstalar Discord
+      win_shell: "C:\\Users\\{{ cleaned_username }}\\AppData\\Local\\Discord\\Update.exe --uninstall -s"
+
+    - name: Purge Discord #Apaga completamente a pasta do discord
+      win_shell: |
+        $diretorio = "C:\\Users\\{{ cleaned_username }}\\AppData\\Local\\Discord"
+        Remove-Item -Path $diretorio -Recurse -Force
+      ignore_errors: yes
