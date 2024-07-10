@@ -1,0 +1,17 @@
+#Busca e caso tenha alguma atualização do Windows pendente ele atualiza
+
+---
+- name: Procurar e instalar atualizações do Windows
+  hosts: windows
+  tasks:
+    - name: Procurar por atualizações do Windows
+      win_updates:
+
+    - name: Instalar atualizações do Windows
+      win_updates:
+        category_names:
+          - SecurityUpdates
+          - UpdateRollups
+          - CriticalUpdates
+        state: installed
+        reboot: no
