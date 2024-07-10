@@ -1,0 +1,16 @@
+---
+- name: win_choco
+  hosts: windows
+  become: false
+  gather_facts: false
+  vars:
+    nome_do_pacote: "escolha_um_nome"  # Defina o nome do pacote aqui
+    packages:
+      - "{{ nome_do_pacote }}"
+
+  tasks:
+    - name: Instalar pacotes
+      chocolatey.chocolatey.win_chocolatey:
+        name: "{{ packages }}"
+        state: present
+        force: yes
