@@ -1,0 +1,8 @@
+#Desliga os PCs Windows
+
+---
+- name: Desligar computador Windows
+  hosts: windows
+  tasks:
+    - name: Agendar desligamento
+      win_shell: shutdown.exe /s /t 0
